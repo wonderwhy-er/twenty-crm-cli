@@ -1,6 +1,6 @@
 {
   "name": "twenty-crm-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Command-line interface for Twenty CRM. Built with Desktop Commander for AI-powered terminal automation.",
   "main": "cli-tool.js",
   "bin": {
