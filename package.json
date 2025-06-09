@@ -1,0 +1,58 @@
+{
+  "name": "twenty-crm-cli",
+  "version": "1.0.0",
+  "description": "Command-line interface for Twenty CRM. Built with Desktop Commander for AI-powered terminal automation.",
+  "main": "cli-tool.js",
+  "bin": {
+    "twenty-cli": "./cli-tool.js",
+    "twenty-quick": "./quick-cli.js"
+  },
+  "scripts": {
+    "start": "node cli-tool.js",
+    "setup": "node cli-tool.js setup",
+    "test": "node cli-tool.js health",
+    "interactive": "node cli-tool.js interactive",
+    "schema": "node quick-cli.js schema",
+    "people": "node cli-tool.js people list",
+    "companies": "node cli-tool.js companies list",
+    "debug": "node debug-api.js",
+    "demo": "node quick-cli.js create-test-data"
+  },
+  "keywords": [
+    "twenty",
+    "crm",
+    "cli",
+    "rest-api",
+    "desktop-commander",
+    "ai-automation",
+    "terminal",
+    "claude-ai",
+    "open-source"
+  ],
+  "author": "Eduard Ruzga",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduardruzga/twenty-crm-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eduardruzga/twenty-crm-cli/issues"
+  },
+  "homepage": "https://github.com/eduardruzga/twenty-crm-cli#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "preferGlobal": true,
+  "files": [
+    "cli-tool.js",
+    "quick-cli.js", 
+    "debug-api.js",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ]
+}
