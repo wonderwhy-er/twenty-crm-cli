@@ -495,6 +495,7 @@ class TwentyCLI {
 
   // Display help
   showHelp() {
+    const currentUrl = this.config.instanceUrl || 'Not configured - run setup first';
     console.log(`
 🚀 Twenty CRM CLI Tool
 
@@ -502,7 +503,7 @@ USAGE:
   node cli-tool.js <command> [options]
 
 COMMANDS:
-  setup                           Configure API key
+  setup                           Configure CRM URL and API key
   test                           Test connection and authentication
   health                         Run comprehensive health check
   interactive                    Start interactive mode
@@ -523,7 +524,8 @@ EXAMPLES:
   node cli-tool.js people list --limit=5
   node cli-tool.js interactive
 
-CRM URL: https://crm.desktopcommander.app
+Current CRM: ${currentUrl}
+Supports any Twenty CRM instance (self-hosted, cloud, enterprise)
     `);
   }
 }
