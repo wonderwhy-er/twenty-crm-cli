@@ -16,11 +16,11 @@ npm install
 
 ## ⚡ Quick Setup
 
-### 1. Configure API Key
+### 1. Configure API Key and URL
 ```bash
 node cli-tool.js setup
 ```
-*Enter your Twenty CRM API key when prompted*
+*Enter your Twenty CRM URL and API key when prompted*
 
 ### 2. Test Connection
 ```bash
@@ -47,6 +47,7 @@ node cli-tool.js interactive
 1. **Go to your Twenty CRM instance**
    - Example: `https://crm.yourcompany.com`
    - Or `https://app.twenty.com` for cloud
+   - Or any self-hosted instance URL
 
 2. **Navigate to Settings**
    - Click Settings (gear icon)
@@ -55,7 +56,7 @@ node cli-tool.js interactive
 3. **Create API Key**
    - Click "Create API Key"
    - Copy the generated key
-   - Paste it during `node cli-tool.js setup`
+   - Use it during `node cli-tool.js setup` along with your instance URL
 
 ## 🎯 Desktop Commander Integration
 
@@ -102,14 +103,19 @@ User: "Show me our portfolio companies"
 ## 🛠️ Advanced Configuration
 
 ### Custom Twenty Instance
-If using self-hosted Twenty:
+The tool now supports any Twenty CRM instance:
 
 ```bash
-# During setup, the tool will auto-detect your instance URL
-# Or manually edit .twenty-config.json:
+# During setup, you'll be prompted for:
+# 1. Your Twenty CRM URL (e.g., https://crm.yourcompany.com)
+# 2. Your API key
+
+# The tool automatically creates the proper API URLs
+# Configuration is saved in .twenty-config.json:
 {
   "apiKey": "your-key",
-  "baseUrl": "https://your-twenty.com/rest"
+  "baseUrl": "https://your-twenty.com/rest",
+  "instanceUrl": "https://your-twenty.com"
 }
 ```
 

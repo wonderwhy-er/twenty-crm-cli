@@ -21,7 +21,6 @@ const path = require('path');
 
 // Configuration
 const CONFIG_FILE = path.join(__dirname, '.twenty-config.json');
-const BASE_URL = 'https://crm.desktopcommander.app/rest';
 
 class TwentyCLI {
   constructor() {
@@ -53,7 +52,11 @@ class TwentyCLI {
       throw new Error('API key not configured. Run: node cli-tool.js setup');
     }
 
-    const url = `${BASE_URL}${endpoint}`;
+    if (!this.config.baseUrl) {
+      throw new Error('Base URL not configured. Run: node cli-tool.js setup');
+    }
+
+    const url = `${this.config.baseUrl}${endpoint}`;
     const config = {
       headers: {
         'Authorization': `Bearer ${this.config.apiKey}`,
@@ -75,7 +78,7 @@ class TwentyCLI {
       return await response.json();
     } catch (error) {
       if (error.code === 'ENOTFOUND') {
-        throw new Error('Cannot connect to CRM. Check if https://crm.desktopcommander.app is accessible.');
+        throw new Error(`Cannot connect to CRM at ${this.config.baseUrl}. Check if the URL is accessible.`);
       }
       throw error;
     }
@@ -91,37 +94,95 @@ class TwentyCLI {
 
     return new Promise((resolve) => {
       console.log('🔧 Twenty CRM CLI Setup');
-      console.log('📍 CRM URL: https://crm.desktopcommander.app');
       console.log('');
-      console.log('To get your API key:');
-      console.log('1. Go to https://crm.desktopcommander.app/settings');
-      console.log('2. Navigate to API & Webhooks (under Developers)');
-      console.log('3. Create or copy your API key');
+      console.log('You need:');
+      console.log('1. Your Twenty CRM instance URL (e.g., https://crm.yourcompany.com)');
+      console.log('2. An API key from your Twenty CRM settings');
       console.log('');
 
-      rl.question('Enter your API key: ', (apiKey) => {
-        if (apiKey.trim()) {
-          this.config.apiKey = apiKey.trim();
-          this.config.baseUrl = BASE_URL;
-          this.saveConfig();
-          console.log('🎉 API key configured successfully!');
-        } else {
-          console.log('❌ No API key provided');
-        }
-        rl.close();
-        resolve();
-      });
+      // Function to ask for URL
+      const askForUrl = () => {
+        rl.question('Enter your Twenty CRM URL (without /rest): ', (url) => {
+          if (!url.trim()) {
+            console.log('❌ URL is required');
+            askForUrl();
+            return;
+          }
+
+          // Clean and validate URL
+          let cleanUrl = url.trim();
+          
+          // Remove trailing slash
+          if (cleanUrl.endsWith('/')) {
+            cleanUrl = cleanUrl.slice(0, -1);
+          }
+          
+          // Remove /rest if accidentally included
+          if (cleanUrl.endsWith('/rest')) {
+            cleanUrl = cleanUrl.slice(0, -5);
+          }
+          
+          // Add https:// if not present
+          if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+            cleanUrl = 'https://' + cleanUrl;
+          }
+
+          const baseUrl = cleanUrl + '/rest';
+          
+          console.log(`📍 Using: ${baseUrl}`);
+          console.log('');
+          console.log('To get your API key:');
+          console.log(`1. Go to ${cleanUrl}/settings`);
+          console.log('2. Navigate to API & Webhooks (under Developers)');
+          console.log('3. Create or copy your API key');
+          console.log('');
+
+          // Function to ask for API key
+          const askForApiKey = () => {
+            rl.question('Enter your API key: ', (apiKey) => {
+              if (apiKey.trim()) {
+                this.config.apiKey = apiKey.trim();
+                this.config.baseUrl = baseUrl;
+                this.config.instanceUrl = cleanUrl;
+                this.saveConfig();
+                console.log('🎉 Configuration saved successfully!');
+                console.log(`📍 CRM URL: ${cleanUrl}`);
+                console.log(`🔗 API URL: ${baseUrl}`);
+                console.log('');
+                console.log('Next steps:');
+                console.log('  node cli-tool.js test      # Test connection');
+                console.log('  node cli-tool.js health    # Full health check');
+              } else {
+                console.log('❌ API key is required');
+                askForApiKey();
+                return;
+              }
+              rl.close();
+              resolve();
+            });
+          };
+
+          askForApiKey();
+        });
+      };
+
+      askForUrl();
     });
   }
 
   async testConnection() {
     console.log('🔍 Testing connection to Twenty CRM...');
-    console.log(`📍 URL: ${BASE_URL}`);
+    console.log(`📍 URL: ${this.config.baseUrl || 'Not configured'}`);
+    
+    if (!this.config.baseUrl) {
+      console.log('❌ Base URL not configured. Run: node cli-tool.js setup');
+      return false;
+    }
     
     try {
       const result = await this.makeRequest('/people?limit=1');
       console.log('✅ Connection successful!');
-      console.log(`📊 API Response: Found ${result.data ? result.data.length : 0} people (limited to 1)`);
+      console.log(`📊 API Response: Found ${result.data?.people?.length || 0} people (limited to 1)`);
       
       if (this.config.apiKey) {
         console.log(`🔑 API Key: ${this.config.apiKey.substring(0, 8)}...`);
@@ -133,6 +194,8 @@ class TwentyCLI {
       
       if (error.message.includes('401')) {
         console.log('💡 This usually means your API key is invalid. Run: node cli-tool.js setup');
+      } else if (error.message.includes('Cannot connect')) {
+        console.log('💡 Check your Twenty CRM URL and ensure it\'s accessible.');
       }
       
       return false;

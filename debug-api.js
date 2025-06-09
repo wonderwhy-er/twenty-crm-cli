@@ -25,7 +25,12 @@ async function debugAPIResponse() {
     return;
   }
 
-  const BASE_URL = 'https://crm.desktopcommander.app/rest';
+  if (!config.baseUrl) {
+    console.error('❌ Base URL not configured. Run: node cli-tool.js setup');
+    return;
+  }
+
+  const BASE_URL = config.baseUrl;
 
   try {
     const fetch = (await import('node-fetch')).default;

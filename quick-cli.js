@@ -5,7 +5,6 @@
  */
 
 const API_KEY = 'YOUR_API_KEY'; // This will be read from config
-const BASE_URL = 'https://crm.desktopcommander.app/rest';
 
 // Quick metadata display
 async function displayMetadata() {
@@ -29,9 +28,14 @@ async function displayMetadata() {
     return;
   }
 
+  if (!config.baseUrl) {
+    console.error('❌ Base URL not configured. Run: node cli-tool.js setup');
+    return;
+  }
+
   try {
     const fetch = (await import('node-fetch')).default;
-    const response = await fetch(`${BASE_URL}/metadata/objects`, {
+    const response = await fetch(`${config.baseUrl}/metadata/objects`, {
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json'
@@ -121,6 +125,11 @@ async function createTestData() {
     return;
   }
 
+  if (!config.baseUrl) {
+    console.error('❌ Base URL not configured');
+    return;
+  }
+
   try {
     const fetch = (await import('node-fetch')).default;
     
@@ -135,7 +144,7 @@ async function createTestData() {
       employees: 150
     };
     
-    const companyResponse = await fetch(`${BASE_URL}/companies`, {
+    const companyResponse = await fetch(`${config.baseUrl}/companies`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,
@@ -178,7 +187,7 @@ async function createTestData() {
     
     const createdPeople = [];
     for (const personData of peopleData) {
-      const personResponse = await fetch(`${BASE_URL}/people`, {
+      const personResponse = await fetch(`${config.baseUrl}/people`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${config.apiKey}`,

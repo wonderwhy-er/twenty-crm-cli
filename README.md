@@ -124,16 +124,17 @@ The tool stores configuration in `.twenty-config.json`:
 ```json
 {
   "apiKey": "your-api-key-here",
-  "baseUrl": "https://your-crm-instance.com/rest"
+  "baseUrl": "https://your-crm-instance.com/rest",
+  "instanceUrl": "https://your-crm-instance.com"
 }
 ```
 
 ### Getting Your API Key
 
-1. Go to your Twenty CRM instance
+1. Go to your Twenty CRM instance (e.g., `https://your-crm.company.com`)
 2. Navigate to **Settings** > **API & Webhooks**
 3. Create or copy your API key
-4. Run `node cli-tool.js setup`
+4. Run `node cli-tool.js setup` and provide both your CRM URL and API key
 
 ## 🎮 Desktop Commander Integration
 
